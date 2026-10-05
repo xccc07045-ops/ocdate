@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OC Match</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--p:#ff4d8d;--p2:#ff9cc2;--bg:#fff;--bg2:#fff0f6;--tx:#2b1b24;--mut:#a07f90;--bd:#ffd3e4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1218;--bg2:#2b1822;--tx:#fff0f6;--mut:#c79ab0;--bd:#4a2a3a}}
+:root[data-theme="dark"]{--bg:#1d1218;--bg2:#2b1822;--tx:#fff0f6;--mut:#c79ab0;--bd:#4a2a3a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:'Prompt',system-ui,'Noto Sans Thai',sans-serif;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+#app{height:100%;display:flex;flex-direction:column;max-width:480px;margin:auto;position:relative;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:8px}
+.logo{font-weight:700;font-size:22px;background:linear-gradient(90deg,var(--p),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent}
+select,input,textarea{font:inherit;color:var(--tx);background:var(--bg2);border:1.5px solid var(--bd);border-radius:12px;padding:9px 12px;width:100%;outline:none}
+header select{width:auto;max-width:55%;padding:6px 10px}
+main{flex:1;min-height:0;overflow-y:auto;padding:0 14px 8px;position:relative}
+nav{display:flex;border-top:1px solid var(--bd);background:var(--bg)}
+nav button{flex:1;padding:10px 0;font-size:12px;color:var(--mut)}nav button b{display:block;font-size:22px}nav .on{color:var(--p);font-weight:600}
+.deck{position:relative;height:100%;min-height:380px;display:flex;flex-direction:column}
+.stack{position:relative;flex:1;min-height:0}
+.card{position:absolute;inset:0;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,var(--p2),var(--p));box-shadow:0 8px 24px #ff4d8d33;touch-action:pan-y;user-select:none}
+.card.back{transform:scale(.95) translateY(10px);opacity:.7}
+.card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.ph{width:100%;height:100%;display:grid;place-items:center;font-size:96px;color:#fff;font-weight:700}
+.info{position:absolute;left:0;right:0;bottom:0;padding:60px 16px 16px;color:#fff;background:linear-gradient(transparent,#000b)}
+.nm{font-size:28px;font-weight:700;line-height:1.1}.nm i{font-style:normal;color:var(--p2);margin-right:8px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.tag{background:#ffffff30;backdrop-filter:blur(6px);border-radius:99px;padding:3px 10px;font-size:12px}
+.ds{font-size:13px;opacity:.95;max-height:3.9em;overflow:hidden}
+.stamp{position:absolute;top:28px;font-size:30px;font-weight:700;border:4px solid;border-radius:10px;padding:2px 12px;opacity:0;transform:rotate(-14deg)}
+.yes{left:20px;color:#3ddc97}.no{right:20px;color:#ff5a5a;transform:rotate(14deg)}
+.btns{display:flex;justify-content:center;gap:28px;padding:14px 0 6px}
+.rb{width:64px;height:64px;border-radius:50%;background:var(--bg);box-shadow:0 4px 14px #ff4d8d40;font-size:28px;border:2px solid var(--bd)}
+.rb.l{color:#ff5a5a}.rb.r{color:var(--p);background:var(--p);color:#fff;border-color:var(--p)}
+.empty{text-align:center;color:var(--mut);padding:60px 20px}.empty b{font-size:54px;display:block}
+.pri{background:linear-gradient(90deg,var(--p),var(--p2));color:#fff;border-radius:99px;padding:12px 22px;font-weight:600;width:100%}
+.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;background:var(--bg2);margin-bottom:8px}
+.av{width:54px;height:54px;border-radius:50%;object-fit:cover;background:linear-gradient(160deg,var(--p2),var(--p));color:#fff;display:grid;place-items:center;font-weight:700;flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.row .t{flex:1;min-width:0}.row small{color:var(--mut);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm{padding:6px 10px;font-size:13px;border-radius:99px;background:var(--bg);border:1px solid var(--bd);color:var(--p)}
+.ov{position:absolute;inset:0;background:var(--bg);z-index:5;display:flex;flex-direction:column;padding-top:0}
+.ov .bd{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px}
+.lb{font-size:13px;color:var(--mut);margin:14px 0 6px}
+.chip{border:1.5px solid var(--bd);border-radius:99px;padding:6px 14px;margin:0 6px 6px 0;background:var(--bg2)}.chip.on{background:var(--p);color:#fff;border-color:var(--p)}
+#msgs{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:78%;padding:8px 12px;border-radius:18px;background:var(--bg2);align-self:flex-start;word-break:break-word}.m.me{align-self:flex-end;background:var(--p);color:#fff}
+.m img{max-width:100%;border-radius:12px;display:block}
+.send{display:flex;gap:8px;padding:8px 12px;border-top:1px solid var(--bd);align-items:center}.send button{font-size:22px;padding:4px 6px;color:var(--p)}
+.toast{position:absolute;top:60px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;padding:10px 18px;border-radius:99px;z-index:9;box-shadow:0 6px 18px #0004}
+.mt{position:absolute;inset:0;z-index:8;background:linear-gradient(160deg,var(--p),var(--p2));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+.mt h1{font-size:40px;margin:0}.mt .av{width:110px;height:110px;font-size:40px;border:4px solid #fff}
+.mt button{background:#fff;color:var(--p);border-radius:99px;padding:12px 28px;font-weight:700}
+
+.card{border-radius:18px;box-shadow:none}.rb{box-shadow:none;width:58px;height:58px;display:grid;place-items:center;padding:0}
+.tag{background:#ffffff26;font-size:11px}.logo{font-weight:600;letter-spacing:.5px}
+nav button{padding:15px 0;font-size:13px;border-top:2px solid transparent;margin-top:-1px}nav .on{border-top-color:var(--p)}
+.dots{position:absolute;top:10px;left:12px;right:12px;display:flex;gap:4px;pointer-events:none}.dots i{flex:1;height:3px;border-radius:2px;background:#fff6}.dots i.on{background:#fff}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pt{position:relative;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:var(--bg2);border:1.5px dashed var(--bd);display:grid;place-items:center;color:var(--mut);font-size:24px}.pt img{width:100%;height:100%;object-fit:cover}.pt button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#0008;color:#fff;font-size:15px;line-height:1}
+.toast{box-shadow:none}.row{background:none;border:1px solid var(--bd)}.sm{white-space:nowrap}.empty{padding-top:80px}.empty .pri{margin-top:6px}
+
+body{font-variant-emoji:text}.g{font-family:system-ui,'Segoe UI Symbol','Noto Sans Symbols 2',sans-serif;font-variant-emoji:text}
+.logo .g{-webkit-text-fill-color:var(--p)}
+nav b{display:block;font-size:20px;font-weight:400;line-height:1.2}nav .on b{color:var(--p)}
+.rb{font-size:26px;line-height:1}.sw{font-size:30px;padding:0 8px}
+.empty::before{content:"♥︎";display:block;font-size:48px;color:var(--p)}
+.info{padding:48px 16px 14px;max-height:64%;overflow-y:auto;background:linear-gradient(transparent,#000c 24%)}
+.dl{list-style:none;margin:8px 0 0;padding:0;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.dl li::before{content:"✦︎";color:var(--p2);margin-right:6px}.dl b{color:var(--p2);font-weight:600}.dl b::after{content:": "}
+.card:not(.back){will-change:transform}main{overscroll-behavior:contain}code{background:var(--bg2);padding:1px 5px;border-radius:6px}</style></head><body>
+<!-- ตั้งค่าครั้งแรก: เปิดไฟล์นี้บน GitHub Pages แล้วทำตามขั้นตอนในหน้าจอ (วาง Firebase config ที่บรรทัด const FB=) -->
+<div id="app"></div>
+<script>
+const OPT={line:['BL','HL','GL','FZ'],status:['โสด','ล็อคคู่'],looking:['เพื่อน','ONS','FWB','คู่เขย-ใภ้'],style:['โรล','เวิ่น','โรลสั้น','โรลบรรยาย','วาด']};
+const LBL={line:'สายที่เล่น',status:'สถานะ',looking:'กำลังมองหา',style:'สาย'};
+const MINOR='วัยเรียน (ไม่บรรลุนิติภาวะ)';OPT.guard=[MINOR,'วัยมหาลัย','วัยทำงาน'];OPT.act=['แอคทีฟต่ำ ตอบช้า','แอคทีฟมาก ตอบไว','แอคทีฟปานกลาง ตอบช้าบ้างไวบ้าง'];LBL.guard='ช่วงวัยผู้ปกครอง';LBL.act='ระดับการแอคทีฟ';
+const PAL=[['#ff4d8d','#ff9cc2'],['#ff6b6b','#ffb3b3'],['#ff9f43','#ffd08a'],['#a66bff','#d2b5ff'],['#2fb8cc','#9ae3ee']];
+const FB={apiKey:'',authDomain:'',projectId:''}; // GitHub Pages: วางค่า Firebase config ตรงนี้
+let fb=false,setup=false,lm='in',an='',ap='',name='',subs=[],rq=0,lastKey='';
+try{an=localStorage.getItem('ocLast')||''}catch(e){}
+const MULTI={line:1,looking:1,style:1};
+let db,uid,all=[],swiped=new Set(),matches=[],active=null,tab='swipe',chat=null,ed=null,mt=null,ready=false,msg='กำลังโหลด…',first=true,unM=null;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=s=>document.querySelector(s);
+const mine=()=>all.filter(o=>o.owner===uid), byId=id=>all.find(o=>o.id===id);
+const myIds=()=>new Set(mine().map(o=>o.id));
+const myMatches=()=>{const s=myIds();return matches.filter(m=>s.has(m.a)||s.has(m.b)).sort((x,y)=>(y.lts||y.ts)-(x.lts||x.ts))};
+const shrink=(f,max,q)=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(i.src);r(c.toDataURL('image/jpeg',q))};i.src=URL.createObjectURL(f)});
+const ava=o=>`<div class="av">${o?.photo?`<img src="${o.photo}">`:esc((o?.name||'?')[0])}</div>`;
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;$('#app').append(d);setTimeout(()=>d.remove(),2600)}
+function tags(o){return [].concat(o.line||[],o.status,o.looking||[],o.style||[]).filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+const imgs=o=>[o.photo,...(o.pics||[])].filter(Boolean);
+const cands=()=>{const a=byId(active);return all.filter(o=>o.id!==active&&!swiped.has(active+'_'+o.id)&&((o.guard===MINOR)===(a?.guard===MINOR)))};
+function rows(o){const L=(k,v)=>v&&v.length?`<li><b>${LBL[k]}</b><span>${esc([].concat(v).join(', '))}</span></li>`:'';return `<ul class="dl">${L('line',o.line)}${L('status',o.status)}${L('guard',o.guard)}${L('act',o.act)}${L('looking',o.looking)}${L('style',o.style)}${o.desc?`<li><b>คำอธิบาย</b><span>${esc(o.desc)}</span></li>`:''}</ul>`}
+function cardHtml(o,back,id,ns){const im=imgs(o);return `<div class="card ${back?'back':''}" ${back?'':`id="${id||'top'}"`}>${im[0]?`<img decoding="async" draggable="false" src="${im[0]}">`:`<div class="ph">${esc((o.name||'?')[0])}</div>`}${!back&&im.length>1?`<div class="dots">${im.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}${back||ns?'':'<div class="stamp yes">สนใจ</div><div class="stamp no">ข้าม</div>'}<div class="info"><div class="nm"><i>${esc(o.age)}</i>${esc(o.name)}</div>${rows(o)}</div></div>`}
+function render(){
+  const A=$('#app');
+  if(setup){A.innerHTML=setupHtml();return}
+  if(fb&&!uid){A.innerHTML=loginHtml();return}
+  if(!ready){A.innerHTML=`<div class="empty">${esc(msg)}</div>`;return}
+  const ms=mine();let body='';
+  if(tab==='swipe'){
+    if(!ms.length)body=`<div class="empty">สร้างโปรไฟล์ OC ก่อนเริ่มปัด<br><br><button class="pri" onclick="edit()">+ สร้างโปรไฟล์ OC</button></div>`;
+    else{const c=cands();
+      body=c.length?`<div class="deck"><div class="stack">${c[1]?cardHtml(c[1],1):''}${cardHtml(c[0])}</div><div class="btns"><button class="rb l" onclick="go('l')">✕</button><button class="rb r" onclick="go('r')">♥︎</button></div></div>`:`<div class="empty">ยังไม่มี OC ใหม่ให้ปัดตอนนี้<br>กลับมาดูใหม่นะ</div>`}
+  }else if(tab==='match'){
+    const l=myMatches();
+    body=l.length?l.map(m=>{const mi=myIds().has(m.a)?m.a:m.b,o=byId(m.a===mi?m.b:m.a),me=byId(mi);return o?`<div class="row" onclick="openChat('${m.id}')">${ava(o)}<div class="t"><b>${esc(o.age)} ${esc(o.name)}</b><small>${m.last?esc(m.last):'แมตแล้ว! ทักเลย'}</small><small>ในนาม ${esc(me?.name)}</small></div></div>`:''}).join(''):`<div class="empty">ยังไม่มีแมต ไปปัดกันเลย</div>`;
+  }else{
+    body=ms.map(o=>`<div class="row">${ava(o)}<div class="t"><b>${esc(o.age)} ${esc(o.name)}</b><small>${esc([].concat(o.line||[],o.status).filter(Boolean).join(' · '))}</small></div><button class="sm" onclick="prev(byId('${o.id}'))">ตัวอย่าง</button><button class="sm" onclick="edit('${o.id}')">แก้ไข</button><button class="sm" onclick="del('${o.id}')">ลบ</button></div>`).join('')+`<button class="pri" onclick="edit()">+ สร้างโปรไฟล์ OC ใหม่</button><div class="lb">สีธีม</div><div>${PAL.map((c,i)=>`<button class="sw g" style="color:${c[0]}" onclick="setTheme(${i})">♥︎</button>`).join('')}</div>`+(fb?`<div class="lb">โปรไฟล์หลัก: ${esc(name)}</div><button class="sm" onclick="logout()">ออกจากระบบ</button><br><br>`:'');
+  }
+  A.innerHTML=`<header><span class="logo"><span class="g">♥︎</span> OC Match</span>${tab==='swipe'&&ms.length>1?`<select onchange="active=this.value;render()">${ms.map(o=>`<option value="${o.id}" ${o.id===active?'selected':''}>ปัดในนาม ${esc(o.name)}</option>`).join('')}</select>`:''}</header><main>${body}</main><nav>${[['swipe','♥︎','ปัด'],['match','✦︎','แมต / แชท'],['me','★︎','OC ของฉัน']].map(([k,i,t])=>`<button class="${tab===k?'on':''}" onclick="tab='${k}';render()"><b class="g">${i}</b>${t}</button>`).join('')}</nav>`;
+  if(tab==='swipe'&&$('#top')&&cands()[0])bind($('#top'),cands()[0],true);
+  lastKey=swKey();
+  if(chat)drawChat();if(ed)drawEd();if(mt)drawMt();
+}
+const swKey=()=>JSON.stringify([tab,active,cands().slice(0,2).map(o=>[o.id,o.name,o.age,(o.pics||[]).length,o.photo?1:0]),mine().length]);
+const soft=()=>{if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(chat||ed||mt||$('#pvov')||(fb&&!uid))return;if(ready&&tab==='swipe'&&swKey()===lastKey)return;render()})};;
+function bind(el,o,sw){const im=imgs(o);let k=0,sx=0,dx=0,on=0,inf=0;const y=el.querySelector('.yes'),n=el.querySelector('.no');
+  const show=()=>{const g=el.querySelector('img');if(g)g.src=im[k];el.querySelectorAll('.dots i').forEach((d,j)=>d.classList.toggle('on',j===k))};
+  el.onpointerdown=e=>{on=1;inf=!!e.target.closest('.info');sx=e.clientX;dx=0;el.setPointerCapture(e.pointerId);el.style.transition='none'};
+  el.onpointermove=e=>{if(!on||!sw)return;dx=e.clientX-sx;el.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;y.style.opacity=dx/90;n.style.opacity=-dx/90};
+  el.onpointerup=e=>{if(!on)return;on=0;if(sw&&Math.abs(dx)>100)go(dx>0?'r':'l');else{if(Math.abs(dx)<6&&im.length>1&&!inf){const r=el.getBoundingClientRect();k=e.clientX-r.left<r.width/2?(k+im.length-1)%im.length:(k+1)%im.length;show()}if(sw){el.style.transition='transform .2s';el.style.transform='';y.style.opacity=n.style.opacity=0}}dx=0}}
+function prev(o){const d=document.createElement('div');d.className='ov';d.id='pvov';d.innerHTML=`<header><button onclick="$('#pvov').remove()" style="font-size:26px">‹</button><b>ตัวอย่างโปรไฟล์</b><span style="width:20px"></span></header><div class="bd" style="display:flex;padding-bottom:24px"><div class="stack" style="flex:1;min-height:420px">${cardHtml(o,0,'pvc',1)}</div></div>`;$('#app').append(d);bind($('#pvc'),o,false)}
+function go(d){const el=$('#top');if(!el)return;const o=cands()[0];if(!o)return;
+  el.style.transition='transform .25s';el.style.transform=`translateX(${d==='r'?520:-520}px) rotate(${d==='r'?25:-25}deg)`;setTimeout(()=>swipe(o,d),210)}
+async function swipe(o,d){
+  const me=active;swiped.add(me+'_'+o.id);render();
+  try{
+    await db.doc('swipes/'+me+'_'+o.id).set({from:me,to:o.id,dir:d,owner:uid,ts:Date.now()});
+    if(d==='r'){const r=await db.doc('swipes/'+o.id+'_'+me).get();
+      if(r.exists&&r.data().dir==='r'){const [a,b]=[me,o.id].sort(),id=a+'_'+b;
+        await db.doc('matches/'+id).set({a,b,owners:[uid,o.owner],ts:Date.now()});mt={o,me:byId(me),id};render()}}
+  }catch(e){toast('เกิดข้อผิดพลาด ลองใหม่นะ')}
+}
+function drawMt(){const d=document.createElement('div');d.className='mt';d.innerHTML=`<h1><span class="g">♥︎</span> แมตแล้ว <span class="g">♥︎</span></h1><div>${esc(mt.me.name)} × ${esc(mt.o.name)}</div>${ava(mt.o)}<button id="mc">ทักเลย</button><button id="mk" style="background:#ffffff40;color:#fff">ปัดต่อ</button>`;$('#app').append(d);
+  $('#mc').onclick=()=>{const id=mt.id;mt=null;tab='match';openChat(id)};$('#mk').onclick=()=>{mt=null;render()}}
+/* chat */
+let unC=null;
+function openChat(id){chat=matches.find(m=>m.id===id);render()}
+function drawChat(){
+  const m=chat,mi=myIds().has(m.a)?m.a:m.b,o=byId(m.a===mi?m.b:m.a);
+  const d=document.createElement('div');d.className='ov';
+  d.innerHTML=`<header><button onclick="closeChat()" style="font-size:24px">‹</button><div class="row" style="flex:1;margin:0;padding:4px 10px">${ava(o)}<b>${esc(o?.age)} ${esc(o?.name)}</b></div></header><div id="msgs"></div><div class="send"><button onclick="$('#pf').click()" style="font-size:15px">รูป</button><input id="mi" placeholder="พิมพ์ข้อความ…" onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()" style="font-size:15px">ส่ง</button><input id="pf" type="file" accept="image/*" hidden onchange="sendImg(this)"></div>`;
+  $('#app').append(d);
+  unC&&unC();unC=db.collection('matches/'+m.id+'/msgs').orderBy('ts').limit(300).onSnapshot(s=>{const b=$('#msgs');if(!b)return;const ids=myIds();
+    b.innerHTML=s.docs.map(x=>{const v=x.data();return `<div class="m ${ids.has(v.from)?'me':''}">${v.img?`<img src="${v.img}">`:''}${v.text?esc(v.text):''}</div>`}).join('');b.scrollTop=b.scrollHeight})}
+function closeChat(){unC&&unC();unC=null;chat=null;render()}
+async function post(v){const m=chat,mi=myIds().has(m.a)?m.a:m.b;
+  await db.collection('matches/'+m.id+'/msgs').add({from:mi,ts:Date.now(),...v});
+  await db.doc('matches/'+m.id).update({last:v.text||' รูปภาพ',lts:Date.now()})}
+async function sendMsg(){const i=$('#mi'),t=i.value.trim();if(!t)return;i.value='';try{await post({text:t})}catch(e){toast('ส่งไม่สำเร็จ')}}
+async function sendImg(inp){const f=inp.files[0];if(!f)return;try{await post({img:await shrink(f,800,.7)})}catch(e){toast('ส่งรูปไม่สำเร็จ')}inp.value=''}
+/* profile editor */
+function edit(id){const o=id?byId(id):null;ed=o?{...o,line:[].concat(o.line||[]),looking:[...(o.looking||[])],style:[...(o.style||[])],pics:[...(o.pics||[])]}:{name:'',age:'',line:[],status:'',guard:'',act:'',looking:[],style:[],desc:'',photo:'',pics:[]};render()}
+function chips(k){const v=ed[k],mn=ed.guard===MINOR;return `<div class="lb">${LBL[k]}${k==='looking'&&mn?' (ผู้เยาว์ไม่มี ONS / FWB)':''}</div><div>${OPT[k].filter(x=>!(mn&&k==='looking'&&(x==='ONS'||x==='FWB'))).map(x=>`<button class="chip ${(MULTI[k]?v.includes(x):v===x)?'on':''}" onclick="pick('${k}','${x}',this)">${x}</button>`).join('')}</div>`}
+function pick(k,x,b){if(MULTI[k]){const a=ed[k],i=a.indexOf(x);i<0?a.push(x):a.splice(i,1);b.classList.toggle('on')}else{ed[k]=ed[k]===x?'':x;b.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent===ed[k]));if(k==='guard'){if(ed.guard===MINOR)ed.looking=ed.looking.filter(x=>x!=='ONS'&&x!=='FWB');reEd()}}}
+function drawEd(){const d=document.createElement('div');d.className='ov';d.id='edov';
+  d.innerHTML=`<header><button onclick="ed=null;render()" style="font-size:26px">‹</button><b>${ed.id?'แก้ไข':'สร้าง'}โปรไฟล์ OC</b><span></span></header><div class="bd">
+  <div style="text-align:center"><div class="av" id="pv" style="width:110px;height:110px;margin:auto;font-size:36px" onclick="$('#ph').click()">${ed.photo?`<img src="${ed.photo}">`:'+'}</div><small style="color:var(--mut)">รูปโปรไฟล์ (1 รูป)</small><input id="ph" type="file" accept="image/*" hidden onchange="setPh(this)"></div>
+  <div class="lb">ชื่อเล่น</div><input value="${esc(ed.name)}" maxlength="30" oninput="ed.name=this.value">
+  <div class="lb">อายุ</div><input type="number" min="1" max="999" value="${esc(ed.age)}" oninput="ed.age=this.value">
+  <div class="lb">รูป OC (${ed.pics.length}/4)</div><div class="g4">${ed.pics.map((p,i)=>`<div class="pt"><img src="${p}"><button onclick="rmPic(${i})">×</button></div>`).join('')}${ed.pics.length<4?`<div class="pt" onclick="$('#pp').click()">+</div>`:''}</div><input id="pp" type="file" accept="image/*" multiple hidden onchange="addPics(this)">${chips('line')}${chips('status')}${chips('guard')}${chips('act')}${chips('looking')}${chips('style')}
+  <div class="lb">คำอธิบาย</div><textarea rows="4" maxlength="400" oninput="ed.desc=this.value">${esc(ed.desc)}</textarea><br><br><button class="pri" style="background:none;color:var(--p);border:1.5px solid var(--p);margin-bottom:10px" onclick="prev(ed)">ดูตัวอย่าง</button><button class="pri" onclick="save()">บันทึก</button></div>`;
+  $('#app').append(d)}
+function reEd(){const t=$('#edov .bd').scrollTop;$('#edov').remove();drawEd();$('#edov .bd').scrollTop=t}
+function rmPic(i){ed.pics.splice(i,1);reEd()}
+async function addPics(inp){for(const f of [...inp.files].slice(0,4-ed.pics.length))ed.pics.push(await shrink(f,640,.65));reEd()}
+async function setPh(i){if(i.files[0]){ed.photo=await shrink(i.files[0],720,.72);$('#pv').innerHTML=`<img src="${ed.photo}">`}}
+async function save(){
+  if(!ed.name.trim()||!ed.age)return toast('กรอกชื่อเล่นและอายุก่อนนะ');if(!ed.guard)return toast('เลือกช่วงวัยผู้ปกครองก่อนนะ');if(ed.guard===MINOR)ed.looking=ed.looking.filter(x=>x!=='ONS'&&x!=='FWB');
+  const id=ed.id||'oc'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  const {id:_,...data}=ed;data.name=data.name.trim();data.age=String(data.age);data.owner=uid;data.ts=data.ts||Date.now();
+  try{await db.doc('ocs/'+id).set(data);if(!active)active=id;ed=null;toast('บันทึกแล้ว');render()}catch(e){toast('บันทึกไม่สำเร็จ (รูปอาจใหญ่ไป)')}}
+async function del(id){if(!confirm('ลบ OC นี้?'))return;await db.doc('ocs/'+id).delete()}
+function setTheme(i){const r=document.documentElement.style;r.setProperty('--p',PAL[i][0]);r.setProperty('--p2',PAL[i][1]);try{localStorage.setItem('ocTheme',i)}catch(e){}}
+try{const t=localStorage.getItem('ocTheme');if(t!==null)setTheme(+t)}catch(e){}
+const loadJs=u=>new Promise((r,j)=>{const e=document.createElement('script');e.src=u;e.onload=r;e.onerror=j;document.head.append(e)});
+const mail=async n=>{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(n.trim().toLowerCase()));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40)+'@oc-match.app'};
+const RULES=`rules_version = '2';
+service cloud.firestore {
+  match /databases/{d}/documents {
+    match /ocs/{id} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.resource.data.owner == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.owner == request.auth.uid;
+    }
+    match /swipes/{id} {
+      allow get: if request.auth != null;
+      allow list: if request.auth != null && resource.data.owner == request.auth.uid;
+      allow create, update: if request.auth != null && request.resource.data.owner == request.auth.uid;
+    }
+    match /matches/{m} {
+      allow read, update: if request.auth != null && request.auth.uid in resource.data.owners;
+      allow create: if request.auth != null && request.auth.uid in request.resource.data.owners;
+      match /msgs/{x} {
+        allow read, create: if request.auth != null && request.auth.uid in get(/databases/$(d)/documents/matches/$(m)).data.owners;
+      }
+    }
+  }
+}`;
+function setupHtml(){return `<div style="flex:1;min-height:0;overflow-y:auto;padding:22px"><div class="logo" style="font-size:26px"><span class="g">♥︎</span> ตั้งค่าครั้งแรก</div><ol style="line-height:1.9;padding-left:20px;font-size:14px"><li>เข้า console.firebase.google.com แล้วสร้างโปรเจกต์ (ฟรี)</li><li>Build → Firestore Database → Create database</li><li>Build → Authentication → Sign-in method → เปิด Email/Password</li><li>Firestore → Rules → วางกฎด้านล่างแล้วกด Publish</li><li>Project settings → Add app (Web) แล้วคัดลอก config ไปใส่ที่บรรทัด <code>const FB=</code> ในไฟล์ index.html</li><li>Authentication → Settings → Authorized domains → เพิ่ม ชื่อคุณ.github.io</li></ol><button class="pri" onclick="navigator.clipboard.writeText(RULES).then(()=>toast('คัดลอกกฎแล้ว'))">คัดลอก Firestore Rules</button><pre style="font-size:11px;overflow:auto;background:var(--bg2);padding:10px;border-radius:12px">${esc(RULES)}</pre></div>`}
+function loginHtml(){const up=lm==='up';return `<div style="flex:1;min-height:0;overflow-y:auto;padding:24px;display:flex;flex-direction:column;justify-content:center"><div class="logo" style="font-size:34px;text-align:center"><span class="g">♥︎</span> OC Match</div><div class="lb">ชื่อโปรไฟล์หลัก</div><input value="${esc(an)}" maxlength="20" autocomplete="username" oninput="an=this.value"><div class="lb">รหัสผ่าน (อย่างน้อย 6 ตัว)</div><input type="password" autocomplete="${up?'new-password':'current-password'}" oninput="ap=this.value" onkeydown="if(event.key==='Enter')doAuth()"><br><br><button class="pri" onclick="doAuth()">${up?'สร้างโปรไฟล์หลัก':'เข้าสู่ระบบ'}</button><button class="sm" style="margin:12px auto;border:0" onclick="lm='${up?'in':'up'}';render()">${up?'มีโปรไฟล์หลักแล้ว? เข้าสู่ระบบ':'ยังไม่มี? สร้างโปรไฟล์หลัก'}</button><small style="text-align:center;color:var(--mut)">ระบบจำการเข้าสู่ระบบไว้ในเครื่องนี้ และใช้ชื่อกับรหัสผ่านเข้าจากเครื่องอื่นได้ ลืมรหัสผ่านกู้คืนไม่ได้</small></div>`}
+async function doAuth(){const n=an.trim();if(!n||ap.length<6)return toast('กรอกชื่อและรหัสผ่านอย่างน้อย 6 ตัว');const a=firebase.auth(),e=await mail(n);
+  try{if(lm==='up'){const c=await a.createUserWithEmailAndPassword(e,ap);name=n;await c.user.updateProfile({displayName:n});render()}else await a.signInWithEmailAndPassword(e,ap);try{localStorage.setItem('ocLast',n)}catch(_){}ap=''}
+  catch(x){toast(x.code==='auth/email-already-in-use'?'ชื่อนี้ถูกใช้แล้ว':x.code==='auth/weak-password'?'รหัสผ่านสั้นเกินไป':'ชื่อหรือรหัสผ่านไม่ถูกต้อง')}}
+function logout(){subs.forEach(f=>f());subs=[];unC&&unC();unC=null;chat=null;ed=null;firebase.auth().signOut()}
+function start(){
+  subs.forEach(f=>f());subs=[];all=[];swiped=new Set();matches=[];active=null;first=true;ready=false;chat=null;ed=null;mt=null;lastKey='';render();
+  subs.push(db.collection('ocs').limit(500).onSnapshot(s=>{all=s.docs.map(x=>({id:x.id,...x.data()}));const ms=mine();if(!ms.find(o=>o.id===active))active=ms[0]?.id||null;ready=true;soft()}));
+  subs.push(db.collection('swipes').where('owner','==',uid).limit(3000).onSnapshot(s=>{s.docs.forEach(x=>swiped.add(x.id));soft()}));
+  subs.push((fb?db.collection('matches').where('owners','array-contains',uid):db.collection('matches').limit(1000)).onSnapshot(s=>{
+    if(!first)s.docChanges().forEach(c=>{if(c.type==='added'){const m=c.doc.data();if(m.owners?.includes(uid)&&!mt)toast('มีแมตใหม่!')}});
+    matches=s.docs.map(x=>({id:x.id,...x.data()}));first=false;if(chat)chat=matches.find(m=>m.id===chat.id)||chat;soft()}));
+}
+render();
+(async()=>{
+  try{
+    const u=await window.claude?.use('user'),d=await window.claude?.use('db');
+    if(u&&d){db=d;uid=await u.id();start();return}
+    if(!FB.apiKey){if(window.claude)msg='กรุณาเข้าสู่ระบบเพื่อใช้งานแอป';else setup=true;render();return}
+    const b='https://www.gstatic.com/firebasejs/10.12.2/';
+    await loadJs(b+'firebase-app-compat.js');await Promise.all([loadJs(b+'firebase-auth-compat.js'),loadJs(b+'firebase-firestore-compat.js')]);
+    firebase.initializeApp(FB);db=firebase.firestore();try{await db.enablePersistence({synchronizeTabs:true})}catch(e){}
+    fb=true;
+    firebase.auth().onAuthStateChanged(us=>{if(us){uid=us.uid;name=us.displayName||name;start()}else{uid=null;ready=false;render()}});
+  }catch(e){msg='เชื่อมต่อไม่สำเร็จ';render()}
+})();
+</script></body></html>
